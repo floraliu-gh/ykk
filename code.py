@@ -205,7 +205,7 @@ def handle_text(event):
                     original_content_url=data["url"],
                     preview_image_url=data["url"]
                 ),
-                TextSendMessage(text=f"來源：{data['episode']}")
+                TextSendMessage(text=f"{data['episode']}")
             ]
             if data.get("audio"):
                 duration = get_audio_duration_ms(data["audio"])
