@@ -152,20 +152,35 @@ def handle_text(event):
             selected = [r for r in last_results if r["no"] == user_input]
             if selected:
                 data = selected[0]
+                
+                # 確保文字絕對不會是空的，如果是空的就塞一個空白字元騙過 LINE
+                episode_text = data.get('episode', '').strip()
+                if not episode_text:
+                    episode_text = " " 
+
                 msgs = [
                     ImageSendMessage(
-                        original_content_url=data["url"],
-                        preview_image_url=data["url"]
+                        original_content_url=data["url"].strip(),
+                        preview_image_url=data["url"].strip()
                     ),
-                    TextSendMessage(text=f"來源：{data['episode']}")
+                    TextSendMessage(text=episode_text)
                 ]
+
                 if data.get("audio"):
                     duration = get_audio_duration_ms(data["audio"])
                     msgs.append(AudioSendMessage(
-                        original_content_url=data["audio"],
+                        original_content_url=data["audio"].strip(),
                         duration=duration
                     ))
-                line_bot_api.reply_message(event.reply_token, msgs)
+
+                try:
+                    line_bot_api.reply_message(event.reply_token, msgs)
+                except Exception as e:
+                    # 只要 LINE 再擋，就會直接在聊天室印出死因
+                    line_bot_api.reply_message(
+                        event.reply_token,
+                        TextSendMessage(text=f"LINE 拒絕傳送！兇手在這裡：\n{str(e)}")
+                    )
                 return
 
         line_bot_api.reply_message(
