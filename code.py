@@ -160,12 +160,10 @@ def handle_text(event):
                     )
                 ]
 
-                # 2. 檢查「集數資訊」，有字才把文字訊息加進去！
                 episode_text = data.get('episode', '')
                 if episode_text and episode_text.strip():
                     msgs.append(TextSendMessage(text=episode_text.strip()))
 
-                # 3. 檢查「音檔」，有網址才把音檔訊息加進去！
                 if data.get("audio") and data.get("audio").strip():
                     duration = get_audio_duration_ms(data["audio"].strip())
                     msgs.append(AudioSendMessage(
@@ -173,7 +171,6 @@ def handle_text(event):
                         duration=duration
                     ))
 
-                # 4. 安全送出
                 try:
                     line_bot_api.reply_message(event.reply_token, msgs)
                 except Exception as e:
@@ -196,7 +193,7 @@ def handle_text(event):
     user_cache.move_to_end(user_id)
     if len(user_cache) > MAX_USERS:
         user_cache.popitem(last=False)
-
+    
     if results:
         if len(results) == 1:
             data = results[0]
@@ -205,7 +202,10 @@ def handle_text(event):
                     original_content_url=data["url"],
                     preview_image_url=data["url"]
                 ),
-                TextSendMessage(text=f"{data['episode']}")
+                
+                episode_text = data.get('episode', '')
+                if episode_text and episode_text.strip():
+                    msgs.append(TextSendMessage(text=episode_text.strip()))
             ]
             if data.get("audio"):
                 duration = get_audio_duration_ms(data["audio"])
