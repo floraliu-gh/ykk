@@ -201,12 +201,12 @@ def handle_text(event):
                 ImageSendMessage(
                     original_content_url=data["url"],
                     preview_image_url=data["url"]
-                ),
+                )]
                 
-                episode_text = data.get('episode', '')
-                if episode_text and episode_text.strip():
-                    msgs.append(TextSendMessage(text=episode_text.strip()))
-            ]
+            episode_text = data.get('episode', '')
+            if episode_text and episode_text.strip():
+                msgs.append(TextSendMessage(text=episode_text.strip()))
+            
             if data.get("audio"):
                 duration = get_audio_duration_ms(data["audio"])
                 msgs.append(AudioSendMessage(
