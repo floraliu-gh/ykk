@@ -97,24 +97,24 @@ def get_images(keyword):
         if random_pick:
             picked = random.choice(rows)
             return [{
-                "no": picked["編號"],
-                "keyword": picked["關鍵字"],
-                "url": picked["圖片網址"],
-                "episode": picked["集數資訊"],
+                "no": picked.get("編號", "").strip(),
+                "keyword": picked.get("關鍵字", "").strip(),
+                "url": picked.get("圖片網址", "").strip(),
+                "episode": picked.get("集數資訊", "").strip(),
                 "audio": picked.get("音檔", "").strip(),
-                "artist": picked.get("藝人", "")
+                "artist": picked.get("藝人", "").strip()
             }]
 
         for row in rows:
             kw = row.get("藝人" if use_artist else "關鍵字", "").strip().lower()
             if all(ch in kw for ch in keyword_clean):
                 results.append({
-                    "no": row["編號"],
-                    "keyword": row["關鍵字"],
-                    "url": row["圖片網址"],
-                    "episode": row["集數資訊"],
+                    "no": row.get("編號", "").strip(),
+                    "keyword": row.get("關鍵字", "").strip(),
+                    "url": row.get("圖片網址", "").strip(),
+                    "episode": row.get("集數資訊", "").strip(),
                     "audio": row.get("音檔", "").strip(),
-                    "artist": row.get("藝人", "")
+                    "artist": row.get("藝人", "").strip()
                 })
 
         return results
