@@ -207,10 +207,10 @@ def handle_text(event):
             if episode_text and episode_text.strip():
                 msgs.append(TextSendMessage(text=episode_text.strip()))
             
-            if data.get("audio"):
-                duration = get_audio_duration_ms(data["audio"])
+            if data.get("audio") and data.get("audio").strip():
+                duration = get_audio_duration_ms(data["audio"].strip())
                 msgs.append(AudioSendMessage(
-                    original_content_url=data["audio"],
+                    original_content_url=data["audio"].strip(),
                     duration=duration
                 ))
             line_bot_api.reply_message(event.reply_token, msgs)
@@ -231,7 +231,6 @@ def handle_text(event):
                 reply_messages.append(TextSendMessage(text=current_text.strip()))
                 current_text = "" # 清空，準備裝下一批
                 
-                # LINE 一次最多只能回覆 5 個訊息框
                 if len(reply_messages) >= 5:
                     current_text = "結果太多，僅顯示前 5 頁內容..."
                     break
