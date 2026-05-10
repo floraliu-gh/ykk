@@ -56,26 +56,13 @@ def get_sheet_rows():
 
 
 def get_audio_duration_ms(url):
-    """音檔長度快取（同一首只算一次）"""
+    """直接回傳假長度，跳過耗時的下載過程"""
+    # 如果你有快取就回傳快取
     if url in AUDIO_DURATION_CACHE:
         return AUDIO_DURATION_CACHE[url]
-
-    try:
-        res = requests.get(url, timeout=10)
-        res.raise_for_status()
-        with tempfile.NamedTemporaryFile(delete=True) as tmp:
-            tmp.write(res.content)
-            tmp.flush()
-            audio = MutagenFile(tmp.name)
-            if audio and audio.info:
-                duration = int(audio.info.length * 1000)
-                AUDIO_DURATION_CACHE[url] = duration
-                return duration
-    except Exception as e:
-        print("Audio duration error:", e)
-
-    AUDIO_DURATION_CACHE[url] = 3000
-    return 3000
+    
+    # 不要再用 requests.get 去下載了，直接騙 LINE 說是 30 秒
+    return 30000
 
 
 def get_images(keyword):
