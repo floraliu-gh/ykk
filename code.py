@@ -196,28 +196,41 @@ def handle_text(event):
             raw_urls = data["url"].replace('\n', ',').split(',')
             valid_urls = [u.strip() for u in raw_urls if u.strip()]
 
-            for u in valid_urls[:4]:
+            has_episode = bool(data.get('episode', '').strip())
+            has_audio = bool(data.get("audio", '').strip())
+            
+            max_images = 5
+            if has_episode: max_images -= 1
+            if has_audio: max_images -= 1
+
+            for u in valid_urls[:max_images]:
                 msgs.append(
                     ImageSendMessage(
                         original_content_url=u,
                         preview_image_url=u
-                        )
                     )
-
-            episode_text = data.get('episode', '')
-            if episode_text:
-                msgs.append(TextSendMessage(text=episode_text))
+                )
+            if has_episode:
+                msgs.append(TextSendMessage(text=data['episode'].strip()))
                 
             if not msgs:
                 return
             
-            if data.get("audio") and data.get("audio").strip():
+            if has_audio:
                 duration = get_audio_duration_ms(data["audio"].strip())
                 msgs.append(AudioSendMessage(
                     original_content_url=data["audio"].strip(),
                     duration=duration
                 ))
-            line_bot_api.reply_message(event.reply_token, msgs)
+
+            # --- 最重要的防護罩，絕對不能漏掉！ ---
+            try:
+                line_bot_api.reply_message(event.reply_token, msgs)
+            except Exception as e:
+                line_bot_api.reply_message(
+                    event.reply_token,
+                    TextSendMessage(text=f"LINE 拒絕傳送！錯誤：\n{str(e)}")
+                )
             return
 
         # 情況 B: 多筆結果 -> 列表顯示 (處理字數過長問題)
