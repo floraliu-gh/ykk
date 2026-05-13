@@ -82,6 +82,10 @@ def get_images(keyword):
             keyword_clean = keyword_clean[1:]
 
         if random_pick:
+            valid_rows = [row for row in rows if row.get("圖片網址", "").strip()]
+            if not valid_rows:
+                return []
+                
             picked = random.choice(rows)
             return [{
                 "no": picked.get("編號", "").strip(),
