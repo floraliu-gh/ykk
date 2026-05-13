@@ -26,7 +26,7 @@ SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/1OS7fRHSzIoJlVymXFp_A06p
 # ========= 快取設定 =========
 SHEET_CACHE = []
 SHEET_LAST_FETCH = 0
-SHEET_TTL = 10  # 5 分鐘
+SHEET_TTL = 10
 
 AUDIO_DURATION_CACHE = {}
 
@@ -34,9 +34,7 @@ user_cache = OrderedDict()
 MAX_USERS = 800
 # ===========================
 
-
 def get_sheet_rows():
-    """5 分鐘抓一次 Google Sheet"""
     global SHEET_CACHE, SHEET_LAST_FETCH
     now = time.time()
 
@@ -56,14 +54,11 @@ def get_sheet_rows():
 
 
 def get_audio_duration_ms(url):
-    """直接回傳假長度，跳過耗時的下載過程"""
+    """回傳假長度，跳過下載過程"""
     # 如果你有快取就回傳快取
     if url in AUDIO_DURATION_CACHE:
         return AUDIO_DURATION_CACHE[url]
-    
-    # 不要再用 requests.get 去下載了，直接騙 LINE 說是 30 秒
-    return 30000
-
+    return 3000
 
 def get_images(keyword):
     """搜尋 Google Sheet"""
@@ -113,7 +108,6 @@ def get_images(keyword):
         traceback.print_exc()
         return []
 
-
 @app.route("/callback", methods=['POST'])
 def callback():
     signature = request.headers.get('X-Line-Signature', '')
@@ -124,11 +118,9 @@ def callback():
         abort(400)
     return 'OK'
 
-
 @app.route("/ping", methods=["GET"])
 def ping():
     return "OK", 200
-
 
 @handler.add(MessageEvent, message=TextMessage)
 def handle_text(event):
@@ -243,7 +235,7 @@ def handle_text(event):
                 )
             return
 
-        # 情況 B: 多筆結果 -> 列表顯示 (處理字數過長問題)
+        # 多筆結果 -> 列表顯示 (處理字數過長問題)
         reply_messages = []
         current_text = "請輸入圖片編號以查看圖片：\n"
         
