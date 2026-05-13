@@ -50,7 +50,7 @@ def get_sheet_rows():
     f = StringIO(decoded_content)
     reader = csv.DictReader(f)
 
-    SHEET_CACHE = list(reader)
+    SHEET_CACHE = list(reader)[1:]
     SHEET_LAST_FETCH = now
     return SHEET_CACHE
 
