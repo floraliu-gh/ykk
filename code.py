@@ -86,7 +86,7 @@ def get_images(keyword):
             if not valid_rows:
                 return []
                 
-            picked = random.choice(rows)
+            picked = random.choice(valid_rows)
             return [{
                 "no": picked.get("編號", "").strip(),
                 "keyword": picked.get("關鍵字", "").strip(),
